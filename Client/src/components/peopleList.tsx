@@ -14,7 +14,6 @@ import Table from "./table";
 export default function PeopleTable() {
   const {
     people,
-    fetchPeople,
     addPerson,
     editPerson,
     deletePerson,
@@ -23,60 +22,53 @@ export default function PeopleTable() {
   const [search, setSearch] = useState<string>("");
   const [field, setField] = useState<string>("name");
   const [current, setCurrent] = useState<Person>(DefaultPerson);
-  const [addModal, setAddModal] = useState<boolean>(false);
-  const [editModal, setEditModal] = useState<boolean>(false);
-  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [modalState, setModalState] = useState({
+    add: false,
+    edit: false,
+    delete: false
+  })
 
   useEffect(() => {
-    fetchPeople();
-  }, []);
+    searchPeople(search, field);
+  }, [field])
+
+  useEffect(() => {
+    if (search === "")
+        searchPeople(search, field);
+  }, [search])
+
+  const fields = [
+    { label: "Nombre", field: "name" },
+    { label: "Apellido Paterno", field: "fatherLastName" },
+    { label: "Apellido Materno", field: "motherLastName" },
+    { label: "Direccion", field: "address", type: "textarea" },
+    { label: "Telefono", field: "phone" },
+  ];
 
   const formFields = (
-    <Fieldset className="space-y-6 rounded-xl bg-white/5 p-6 sm:p-10">
-      <Field>
-        <Label className={labelClasses}>Nombre:</Label>
-        <Input
-          value={current.name}
-          onChange={(e) => setCurrent({ ...current, name: e.target.value })}
-          className={inputClasses}
-        />
-      </Field>
-      <Field>
-        <Label className={labelClasses}>Apellido paterno:</Label>
-        <Input
-          value={current.fatherLastName}
-          onChange={(e) =>
-            setCurrent({ ...current, fatherLastName: e.target.value })
-          }
-          className={inputClasses}
-        />
-      </Field>
-      <Field>
-        <Label className={labelClasses}>Apellido materno:</Label>
-        <Input
-          value={current.motherLastName}
-          onChange={(e) =>
-            setCurrent({ ...current, motherLastName: e.target.value })
-          }
-          className={inputClasses}
-        />
-      </Field>
-      <Field>
-        <Label className={labelClasses}>Direccion:</Label>
-        <Textarea
-          value={current.address}
-          onChange={(e) => setCurrent({ ...current, address: e.target.value })}
-          className={inputClasses}
-        />
-      </Field>
-      <Field>
-        <Label className={labelClasses}>Telefono:</Label>
-        <Input
-          value={current.phone}
-          onChange={(e) => setCurrent({ ...current, phone: e.target.value })}
-          className={inputClasses}
-        />
-      </Field>
+    <Fieldset>
+      {fields.map(({ label, field, type = "input" }) => (
+        <Field key={field}>
+          <Label className={labelClasses}>{label}:</Label>
+          {type === "textarea" ? (
+            <Textarea
+              value={current[field]}
+              onChange={(e) =>
+                setCurrent({ ...current, [field]: e.target.value })
+              }
+              className={inputClasses}
+            />
+          ) : (
+            <Input
+              value={current[field]}
+              onChange={(e) =>
+                setCurrent({ ...current, [field]: e.target.value })
+              }
+              className={inputClasses}
+            />
+          )}
+        </Field>
+      ))}
     </Fieldset>
   );
 
@@ -84,7 +76,10 @@ export default function PeopleTable() {
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg mx-auto p-4">
       <div className="pb-2 bg-white dark:bg-gray-900 flex flex-row justify-between">
         <form
-          onSubmit={() => searchPeople(search, field)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            searchPeople(search, field);
+          }}
           className="flex flex-row justify-items-start"
         >
           <SearchInput
@@ -105,8 +100,9 @@ export default function PeopleTable() {
             className="bg-green-500"
             onClick={() => {
               setCurrent(DefaultPerson);
-              setAddModal(true);
-            }}>
+              setModalState({ ...modalState, add: true});
+            }}
+          >
             Agregar
           </Button>
         </div>
@@ -155,7 +151,7 @@ export default function PeopleTable() {
                   className="bg-blue-600"
                   onClick={() => {
                     setCurrent(person);
-                    setEditModal(true);
+                    setModalState({ ...modalState, edit: true});
                   }}
                 >
                   Editar
@@ -164,7 +160,7 @@ export default function PeopleTable() {
                   className="bg-red-600"
                   onClick={() => {
                     setCurrent(person);
-                    setDeleteModal(true);
+                    setModalState({ ...modalState, delete: true});
                   }}
                 >
                   Borrar
@@ -176,11 +172,11 @@ export default function PeopleTable() {
       />
 
       <Modal
-        open={addModal}
-        setOpen={setAddModal}
+        open={modalState.add}
+        setOpen={() => setModalState({ ...modalState, add: false})}
         primaryBtnFn={() => {
           addPerson(current);
-          setAddModal(false);
+          setModalState({ ...modalState, add: false});
         }}
         btnColor={"blue"}
         title={"Agregar persona"}
@@ -190,11 +186,11 @@ export default function PeopleTable() {
       </Modal>
 
       <Modal
-        open={editModal}
-        setOpen={setEditModal}
+        open={modalState.edit}
+        setOpen={() => setModalState({ ...modalState, edit: false})}
         primaryBtnFn={() => {
           editPerson(current);
-          setEditModal(false);
+          setModalState({ ...modalState, edit: false});
         }}
         btnColor={"blue"}
         title={"Editar persona"}
@@ -204,11 +200,11 @@ export default function PeopleTable() {
       </Modal>
 
       <Modal
-        open={deleteModal}
-        setOpen={setDeleteModal}
+        open={modalState.delete}
+        setOpen={() => setModalState({ ...modalState, delete: false})}
         primaryBtnFn={() => {
           deletePerson(current);
-          setDeleteModal(false);
+          setModalState({ ...modalState, delete: false});
         }}
         btnColor={"red"}
         title={"Eliminar persona"}

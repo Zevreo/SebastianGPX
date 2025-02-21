@@ -4,8 +4,12 @@ const SearchOptions = [
         name: 'Nombre'
     },
     {
-        value: 'fatherLastName,motherLastName',
-        name: 'Apellidos'
+        value: 'fatherLastName',
+        name: 'Apellido paterno'
+    },
+    {
+        value: 'motherLastName',
+        name: 'Apellido materno'
     }
 ]
 

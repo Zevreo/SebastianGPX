@@ -1,7 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const People = require("../models/people.model");
-const { Op } = require("sequelize");
+import { Router } from "express";
+const router = Router();
+import People from "../models/people.model.js";
+import { Op } from "sequelize";
 
 //Find all people - allow params for search and specify which fields
 router.get("/", (req, res) => {
@@ -74,4 +74,4 @@ router.patch("/:id", async (req, res) => {
     .catch((err) => res.sendStatus(500).send(err));
 });
 
-module.exports = router;
+export default router;

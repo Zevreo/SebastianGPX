@@ -17,7 +17,7 @@ const Modal = ({ open, setOpen, children, primaryBtnFn, btnColor, title, btnName
           >
             <DialogHeader>
               <Button
-                onClick={() => setOpen(false)}
+                onClick={setOpen}
                 className="btn btn-sm btn-circle btn-ghost absolute right-2"
               >
                 ✕
@@ -42,7 +42,7 @@ const Modal = ({ open, setOpen, children, primaryBtnFn, btnColor, title, btnName
               <Button
                 type="button"
                 data-autofocus
-                onClick={() => setOpen(false)}
+                onClick={setOpen}
                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
               >
                 Cancel

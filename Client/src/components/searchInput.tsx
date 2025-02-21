@@ -1,11 +1,7 @@
-import { Input } from "@headlessui/react";
+import { Button, Input } from "@headlessui/react";
 import { SearchInputProps } from "../props/searchInput";
 
-const SearchInput = ({
-  value,
-  setValue,
-  placeholder,
-}: SearchInputProps) => {
+const SearchInput = ({ value, setValue, placeholder }: SearchInputProps) => {
   return (
     <div className="relative">
       <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -35,6 +31,12 @@ const SearchInput = ({
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
+      <Button
+        onClick={() => setValue("")}
+        className="btn btn-sm btn-circle btn-ghost absolute inset-y-0 end-0 flex items-center me-3 text-gray-500 dark:text-gray-400 cursor-pointer"
+      >
+        ✕
+      </Button>
     </div>
   );
 };

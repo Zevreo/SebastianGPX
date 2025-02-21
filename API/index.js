@@ -1,8 +1,12 @@
-const express = require("express");
-const sequelize = require("./db/instance");
-const cors = require('cors');
+import express, { json } from "express";
+import sequelize from "./db/instance.js";
+import cors from 'cors';
+import { graphqlHTTP } from "express-graphql";
+import schema from './graphql/schema.js';
+import rootValue from './graphql/root.js';
+import router from "./routes/people.routes.js";
 const app = express();
-app.use(express.json());
+app.use(json());
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,4 +22,12 @@ try {
 }
 
 app.use(cors({origin: 'http://localhost:5173'}));
-app.use("/api/people", require("./routes/people.routes"));
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema,
+    rootValue,
+    graphiql: true,
+  })
+);
+app.use("/api/people", router);
